@@ -26,7 +26,7 @@ A robust Spring Boot REST API for managing pet adoptions, donations, and adminis
 - **Language**: Java 11+
 - **Database**: NoSQL (MongoDB)
 - **Authentication**: JWT (JSON Web Tokens)
-- **Build Tool**: Maven
+- **Build Tool**: Gradle
 - **Testing**: JUnit 5, Mockito
 - **Documentation**: Swagger/OpenAPI 3
 - **Logging**: SLF4J with Logback
@@ -36,7 +36,7 @@ A robust Spring Boot REST API for managing pet adoptions, donations, and adminis
 Before running this application, make sure you have the following installed:
 
 - Java 11 or higher
-- Maven 3.6+
+- Gradle 7.0+ (or use included Gradle Wrapper)
 - MongoDB (or access to MongoDB Atlas)
 - Git
 
@@ -69,18 +69,51 @@ Before running this application, make sure you have the following installed:
 
 3. **Build the application**
    ```bash
-   mvn clean install
+   ./gradlew build
    ```
 
 4. **Run the application**
    ```bash
-   mvn spring-boot:run
+   ./gradlew bootRun
    ```
 
 5. **Run tests**
    ```bash
-   mvn test
+   ./gradlew test
    ```
+
+## 🔧 Gradle Commands
+
+### Common Gradle Tasks
+```bash
+# Build the project
+./gradlew build
+
+# Run the application
+./gradlew bootRun
+
+# Run tests
+./gradlew test
+
+# Clean build artifacts
+./gradlew clean
+
+# Generate test coverage report
+./gradlew jacocoTestReport
+
+# Check for dependency updates
+./gradlew dependencyUpdates
+
+# Build without tests
+./gradlew build -x test
+```
+
+### Windows Users
+Use `gradlew.bat` instead of `./gradlew` on Windows:
+```cmd
+gradlew.bat build
+gradlew.bat bootRun
+```
 
 ## 🌐 API Endpoints
 
@@ -244,7 +277,7 @@ DELETE /api/admin/pets/:petId/vaccination/:vaccineId - Delete vaccination record
 
 ## 📝 Configuration
 
-### Database Configuration
+### Application Configuration (application.properties)
 ```properties
 # MongoDB Configuration
 spring.data.mongodb.uri=mongodb://localhost:27017/pet_adoption
@@ -253,6 +286,26 @@ spring.data.mongodb.database=pet_adoption
 # Connection Pool Settings
 spring.data.mongodb.host=localhost
 spring.data.mongodb.port=27017
+```
+
+### Build Configuration (build.gradle)
+```gradle
+plugins {
+    id 'org.springframework.boot' version '2.7.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'jacoco'
+}
+
+group = 'com.petadoption'
+version = '1.0.0'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+// Dependencies section shown above
 ```
 
 ### JWT Configuration
@@ -273,36 +326,36 @@ payment.gateway.secret=your_payment_secret
 
 ### Unit Tests
 ```bash
-mvn test
+./gradlew test
 ```
 
 ### Integration Tests
 ```bash
-mvn test -Dtest=*IntegrationTest
+./gradlew integrationTest
 ```
 
 ### Test Coverage
 ```bash
-mvn jacoco:report
+./gradlew jacocoTestReport
 ```
 
 ## 🚀 Deployment
 
 ### Local Development
 ```bash
-mvn spring-boot:run
+./gradlew bootRun
 ```
 
 ### Production Build
 ```bash
-mvn clean package -DskipTests
-java -jar target/pet-adoption-api-1.0.0.jar
+./gradlew clean build -x test
+java -jar build/libs/pet-adoption-api-1.0.0.jar
 ```
 
 ### Docker Deployment
 ```dockerfile
 FROM openjdk:11-jre-slim
-COPY target/pet-adoption-api-1.0.0.jar app.jar
+COPY build/libs/pet-adoption-api-1.0.0.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app.jar"]
 ```
@@ -341,9 +394,26 @@ GET /api/actuator/metrics
 - Swagger UI available at: `http://localhost:8080/api/swagger-ui.html`
 - OpenAPI specification at: `http://localhost:8080/api/v3/api-docs`
 
+### Build Tools
+- Gradle Wrapper included (no need to install Gradle separately)
+- IntelliJ IDEA / Eclipse with Gradle plugin
+- Command line Gradle tasks for all operations
+
 ### Database Tools
 - MongoDB Compass for database management
 - Spring Data MongoDB for repository operations
+
+### Code Quality
+```bash
+# Run code quality checks
+./gradlew check
+
+# Generate test coverage report
+./gradlew jacocoTestReport
+
+# View coverage report
+open build/reports/jacoco/test/html/index.html
+```
 
 ## 🤝 Contributing
 
@@ -370,8 +440,37 @@ src/
 │   └── resources/
 │       ├── application.properties
 │       └── logback-spring.xml
-└── test/
-    └── java/                   # Test classes
+├── test/
+│   └── java/                   # Test classes
+├── build.gradle                # Gradle build configuration
+├── gradlew                     # Gradle wrapper (Unix)
+├── gradlew.bat                 # Gradle wrapper (Windows)
+└── gradle/
+    └── wrapper/                # Gradle wrapper files
+```
+
+## 📦 Dependencies (build.gradle)
+
+```gradle
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    
+    // Documentation
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.testcontainers:mongodb'
+    testImplementation 'org.testcontainers:junit-jupiter'
+}
 ```
 
 ## 📝 License
